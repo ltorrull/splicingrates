@@ -40,12 +40,6 @@ Other folders in this repository include:
 
 The splicing rates pipeline was designed to be run on bam files containing mapped reads from a timecourse of 4sU-seq experiments. Here, we describe the usage of the three main steps of the splicing rates pipeline. Below, we provide sections that discuss alternative parameter usage for classification and quantification, as well as a tutorial walking through all the steps necessary to run the splicing rates pipeline.
 
-<!---
-<p align="center">
-<img src="./readme/HITindex_overview.png" width="80%" height="80%">
-</p> 
--->
-
 ### Splicing Rates Introns
 Get intron coordinates from a gtf file, parsing by type of intron. This step includes (a) identifying introns that are constitutive or alternative (or not restricting by either), and (b) calculating the distance from the 3' splice site to the end of the gene (3' distance).
 
@@ -198,11 +192,7 @@ Users can choose which type of intron to output. Choices: allintrons, alternativ
 
 Two files are output: </br>
 1. Bed file with precise intron coordinates and ID with gene/intron coordinates [bed file, ```[genomename].[introntype].bed```] <br>
-2. Tab-separated file with distance from 3' splice site to the end of the annotated gene, which we call the 3' distance [txt file, ```[genomename].[introntype].threedist```]
-
-<p align="center">
-<img src="./readme/threedist.png" width="75%" height="75%">
-</p>
+2. Tab-separated file with distance from 3' splice site to the end of the annotated gene as shown in the figure above, which we call the 3' distance [txt file, ```[genomename].[introntype].threedist```]
 
 Example intron coordinate bed file:
 ```
@@ -252,7 +242,7 @@ Three **output** files will be generated (as indicated in figure below):
 3. Downstream exon region: ```[genome].[introntype]_[readlength]nt_exondown_ee.bed```
 
 <p align="center">
-<img src="./readme/junctionreads.png" width="50%" height="50%">
+<img src="./readme/junctionregions.png" width="50%" height="50%">
 </p>
 
 ### Step 3: Extracting Junction Reads
@@ -277,7 +267,7 @@ Strandedness is determined by the type of library preparation protocol. We borro
 Junction reads are assigned to introns based on an matches to either the 3' intron-exon boundary (for intron-exon junction reads) or evidence for splicing together of two specific exon regions corresponding to the 5'ss and 3'ss of the designed intron (for exon-exon split junction reads). Split reads that arise from splicing using only one splice site of the pair will not be counted as a junction read for that intron. The minimum overlap length for junction reads is determined by ```--overlap```, with a default of 10nt as specified when running ```splicingrates_reads.py --intronRegions```. 
 
 <p align="center">
-<img src="./readme/junctionReads.png" width="90%" height="90%">
+<img src="./readme/junctionreads.png" width="90%" height="90%">
 </p>
 
 
