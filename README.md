@@ -50,14 +50,15 @@ The splicing rates pipeline was designed to be run on bam files containing mappe
 Get intron coordinates from a gtf file, parsing by type of intron. This step includes (a) identifying introns that are constitutive or alternative (or not restricting by either), and (b) calculating the distance from the 3' splice site to the end of the gene (3' distance).
 
 ```
-usage: splicingrates_introns.py [-h] --gtf x.gtf [--introns {allintrons,alternative,constitutive}] 
+usage: splicingrates_introns.py [-h] --gtf x.gtf 
+                                    [--introns {allintrons,alternative,constitutive}] 
                                      --outname
 
 optional arguments:
   -h, --help            show this help message and exit
 
 Input:
-  --gtf gtf             gtf file from which to get annotations (full path) (default: None)
+  --gtf X.gtf           gtf file from which to get annotations (full path) (default: None)
 
 Parameters:
   --introns {allintrons, alternative, constitutive}     
@@ -65,20 +66,15 @@ Parameters:
                         into a file (default: constitutive)
 
 Output:
-  --outname outname     basename of output file (full path) (default: None)
+  --outname             basename of output file (full path) (default: None)
 ```
 
 ### Splicing Rates Reads
 Identify and quantify exon-exon and intron-exon junction reads for designated introns. This step includes (a) specifying the intron regions from which to isolate reads, accounting for read length and (b) quantifying junction reads for specific introns.
 
 ```
-usage: splicingrates_reads.py [-h] [--intronRegions] [--junctionReads]
-                                    --bedname bedname --readlength readlength
-                                   [--introns x.introntype.bed] [--bam x.bam]
-                                   [--readtype {single,paired}] [--readstrand {fr-unstrand,fr-firststrand,fr-secondstrand}]
-
 usage: splicingrates_reads.py [-h] --introns x.introntype.bed --readlength readlength
-                              [--intronRegions] 
+                              [--intronRegions] [--overlap]
                               [--junctionReads] [--bam x.bam] [--readtype {single,paired}]
                               [--readstrand {fr-unstrand,fr-firststrand,fr-secondstrand}]
 
@@ -97,7 +93,8 @@ optional arguments:
 region information:
   --intronRegions       Calculate specific intronic regions to use for
                         grabbing reads (default: False)
-
+  --overlap             overlap of junction reads with region of interest (nt)
+                        (default: 10)                        
 
 read quantification:
   --junctionReads       Quantify junction reads from specified introns
@@ -116,7 +113,7 @@ Estimate splicing rates (half-lives) for designated introns. This step includes 
 
 ```
 usage: splicingrates_model.py [-h] --basename x_Xm_repX --timepoints t1,t2,...tn 
-                                   --replicates REPLICATES [--summed]
+                                   [--replicates] [--summed]
                                    --outname OUTNAME [--txnrate]
                                    --threedist x_threedist.txt
 
@@ -132,9 +129,7 @@ read information:
   --timepoints t1,t2,...tn
                         comma separated list of 4sU labeling timepoints
                         (minutes) (default: None)
-  --replicates REPLICATES
-                        number of replicates for each timepoint (default:
-                        None)
+  --replicates          number of replicates for each timepoint (default: 1)
   --summed              Estimate splicing rates with summed junction reads
                         (across replicates) (default: False)
 
@@ -235,7 +230,7 @@ Example usage using default parameters to run both steps in tandem:
 
 ```
 python splicingrates_reads.py --introns [genome].[introntype].bed --readlength 
-                              --intronRegions 
+                              --intronRegions --overlap 10
                               --junctionReads --bam [sample].[T]m.rep[N].bam 
                               --readtype paired --readstrand fr-firststrand
 ```
@@ -279,7 +274,7 @@ Strandedness is determined by the type of library preparation protocol. We borro
 <img src="./readme/readStrand.png" width="50%" height="50%">
 </p>
 
-Junction reads are assigned to introns based on an matches to either the 3' intron-exon boundary (for intron-exon junction reads) or evidence for splicing together of two specific exon regions corresponding to the 5'ss and 3'ss of the designed intron (for exon-exon split junction reads). Split reads that arise from splicing using only one splice site of the pair will not be counted as a junction read for that intron. The minimum overlap length for junction reads is determined by ```--overlap```, with a default of 10nt. 
+Junction reads are assigned to introns based on an matches to either the 3' intron-exon boundary (for intron-exon junction reads) or evidence for splicing together of two specific exon regions corresponding to the 5'ss and 3'ss of the designed intron (for exon-exon split junction reads). Split reads that arise from splicing using only one splice site of the pair will not be counted as a junction read for that intron. The minimum overlap length for junction reads is determined by ```--overlap```, with a default of 10nt as specified when running ```splicingrates_reads.py --intronRegions```. 
 
 <p align="center">
 <img src="./readme/junctionReads.png" width="90%" height="90%">
