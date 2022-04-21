@@ -1,6 +1,6 @@
 # SplicingRates
 
-**Citation: Pai AA, Henriques T, McCue K, Burkholder A, Adelman K, and Burge CB. (2017). The kinetics of pre-mRNA splicing in the Drosophila genome and the influence of gene architecture. *eLife.* 6:e32537**
+**[Citation](https://elifesciences.org/articles/32537): Pai AA, Henriques T, McCue K, Burkholder A, Adelman K, and Burge CB. (2017). The kinetics of pre-mRNA splicing in the Drosophila genome and the influence of gene architecture. *eLife.* 6:e32537**
 
 The splicing rates pipeline is designed to estimate rates of intron splicing from a timecourse of genomewide nascent RNA 4sU-seq data. Rates are measured as splicing half-lives, which represent the time it takes for half of the transcripts from the gene to splice out the intron. The current model is designed to measure rates of consititutively spliced introns, since the model assumes that splicing of the intron goes to completion among the population of steady-state mature mRNA molecules. Modifications to estimate rates of splicing for alternatively spliced introns are in progress.
 
