@@ -341,7 +341,7 @@ replicate 3: *FlyS2_5m_rep3.bam*, *FlyS2_10m_rep3.bam*, *FlyS2_20m_rep3.bam*
 
 **Output**
 
-This step results in ```.halflives``` file(s) with the following columns (one per each replicates with filename ```FlyS2_splicingrates_rep1.halflives```, and one for summed reads if specified with filename ```FlyS2_splicingrates_summed.halflives):
+This step results in ```.halflives``` file(s) with the following columns (one per each replicates with filename ```FlyS2_splicingrates_rep1.halflives```, and one for summed reads if specified with filename ```FlyS2_splicingrates_summed.halflives```):
 
 | Column Name | Description |
 | ----------- | ----------- |
