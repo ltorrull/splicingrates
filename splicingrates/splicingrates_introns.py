@@ -58,7 +58,7 @@ def getIntrons(genedict,outname):
                 introns.append(exonends[i] +"-"+ exonstarts[i+1])
         introns2=list(set(introns))
         intronlen += len(introns2)
-        for one in introns2:
+        for intron in introns2:
             name = str(gene.split(":")[0]) +':'+ str(gene.split(":")[1]) +':'+ str(intron) +':'+ str(gene.split(":")[3])
             outfile.write(str(gene.split(":")[1]) +"\t"+ str(one.split("-")[0]) +"\t"+ str(one.split("-")[1]) +"\t"+ str(name) +"\tintron\t"+ str(gene.split(":")[3]) +"\n")
             # write file with distance to 3' gene end (for kinetics scripts)
