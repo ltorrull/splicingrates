@@ -219,10 +219,10 @@ ENSG00000227232:1:17055-17233:-	  2651
 Example usage using default parameters to run both steps in tandem:
 
 ```
-python splicingrates_reads.py --introns [genome].[introntype].bed --readlength 
-                              --intronRegions --overlap 10
-                              --junctionReads --bam [sample].[T]m.rep[N].bam 
-                              --readtype paired --readstrand fr-firststrand
+python3 splicingrates_reads.py --introns [genome].[introntype].bed --readlength 
+                               --intronRegions --overlap 10
+                               --junctionReads --bam [sample].[T]m.rep[N].bam 
+                               --readtype paired --readstrand fr-firststrand
 ```
 
 ### Step 2: Specifying Intron Regions
