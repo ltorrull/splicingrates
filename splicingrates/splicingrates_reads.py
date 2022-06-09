@@ -225,6 +225,9 @@ if __name__ == '__main__':
 	group_reads.add_argument('--readstrand', type=str, help = 'directionality of RNA-seq data', default='fr-firststrand', required=False, choices=['fr-unstrand','fr-firststrand','fr-secondstrand'])
 	args = parser.parse_args()
 
+	if not args.intronRegions and not args.junctionReads:
+		sys.exit("ERROR! Need to specify either --intronRegions or --junctionRegions to perform a function with this script!")	
+	
 	if args.intronRegions:
 		print("Getting Intron Regions...")
 		getRegions(args.introns, args.readlength, args.overlap)
