@@ -167,8 +167,8 @@ STAR --outFilterType BySJout --outFilterMultimapNmax 20 --alignSJoverhangMin 8 -
 samtools index [bamfile].bam
 ```
 
-**Sample Naming Convention** <br>
-Downstream steps assume that the bam file is named with the following convention: ```[samplename].[T]m.rep[N].bam```, where T is the 4sU labeling timepoint and N is the replicate. T can be a string (i.e. "totalRNA") as long as the "m" is included. Even if there is just 1 replicate, the "rep1" is expected to be included in the file name.
+**SAMPLE NAMING CONVENTION** <br>
+***Downstream steps assume that the bam file is named with the following convention: ```[samplename].[T]m.rep[N].bam```, where T is the 4sU labeling timepoint and N is the replicate. T can be a string (i.e. "totalRNA") as long as the "m" is included. Even if there is just 1 replicate, the "rep1" is expected to be included in the file name. THIS IS IMPORTANT FOR SAMPLES TO BE PROPERLY RECOGNIZED AND PARSED IN LATER STEPS! ***
 
 ### Step 1: Intron Delineation
 
@@ -218,7 +218,7 @@ ENSG00000227232:1:17055-17233:-	  2651
 
 ### Step 2: Get Overlapping Junction Reads
 
-Identify and quantify exon-exon and intron-exon junction reads for designated introns. This step includes (a) specifying the intron regions from which to isolate reads, accounting for read length, with ```--intronRegions``` and (b) quantifying junction reads for specific introns with ```--junctionReads```.
+Identify and quantify exon-exon and intron-exon junction reads for designated introns. This step includes (a) specifying the intron regions from which to isolate reads, accounting for read length, with ```--intronRegions``` and (b) quantifying junction reads for specific introns with ```--junctionReads``` (for each sample that will be used in the model).
 
 Example usage using default parameters to run both steps in tandem:
 
@@ -250,6 +250,8 @@ Three **output** files will be generated (as indicated in figure below):
 </p>
 
 ### Step 2B: Extracting Junction Reads
+
+***NOTE: This step needs to be performed independently for each sample that will be used for modeling in Step 3.***
 
 If you already have intron region files (from running Step 2A), then you can proceed directly to extracting junction reads:
 
