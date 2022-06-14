@@ -235,7 +235,7 @@ if __name__ == '__main__':
 
 	if args.junctionReads:
 		print("Getting Junction Reads...")
-		if args.bam == "None":
+		if args.bam == "None" or args.outdir == "None":
 			sys.exit("ERROR! Need to include --bam and --outdir when running --junctionReads")
 		# make output filename
 		name = args.bam
@@ -261,21 +261,21 @@ if __name__ == '__main__':
 		exondownbed = args.introns[:-4] +'_'+ str(args.readlength) +'nt_exondown_ee.bed'
 
 		# get junction coverage
-		#juncbam = args.bam[:-4]
+		juncbam = bamname[:-4]
 		print("... coverage of junction regions...")
 		print("...... intron-exon junction coverage.")
-		getCoverage_intron(intronbed, bamname, args.readtype, args.readstrand)
+		getCoverage_intron(intronbed, juncbam, args.readtype, args.readstrand)
 		print("...... junction coverage of upstream exons.")
-		getCoverage_exon(exonupbed, bamname, args.readtype, args.readstrand, "eeup")
+		getCoverage_exon(exonupbed, juncbam, args.readtype, args.readstrand, "eeup")
 		print("...... junction coverage of downstream exons.")
-		getCoverage_exon(exondownbed, bamname, args.readtype, args.readstrand, "eedown")
+		getCoverage_exon(exondownbed, juncbam, args.readtype, args.readstrand, "eedown")
 
 		# get intron-specific coverage and make final file
 		print("... making combined coverage file.")
 		exonupdict = readExonFile(bamname + "_eeupjunc.bed.gz")
-		exondowndict = readExonFile(bamname + "_eedownjunc.bed.gz")
-		introndict = readIntronFile(bamname + "_iejunc.bed.gz")
-		combineRegions(introndict, exonupdict, exondowndict, bamname)
+		exondowndict = readExonFile(juncbam + "_eedownjunc.bed.gz")
+		introndict = readIntronFile(juncbam + "_iejunc.bed.gz")
+		combineRegions(introndict, exonupdict, exondowndict, juncbam)
 
 		# cleanup files
 		rmTempFiles(bamname)
