@@ -53,8 +53,8 @@ def getRegions(intronbedname, readlength, overlap):
 		outfile_exondown.write(chrom +'\t'+ str(exondown_start) +'\t'+ str(exondown_end) +'\t'+ name +'\t.\t'+ strand +'\n') 
 		outfile_intron.write(chrom +'\t'+ str(intron_start) +'\t'+ str(intron_end) +'\t'+ name +'\t.\t'+ strand +'\n') 
 
-def JunctionBam_SE(bam):
-	bamname = bam[:-4]
+def JunctionBam_SE(bam, bamname):
+	#bamname = bam[:-4]
 	outfile = bamname + '_junctions_read1.bam'   
 	cmd_header = "samtools view -H " + bam + " > " + bamname + "_junctions_header.txt"
 	cmd_junc = "samtools view -F 256 " + bam + " | awk '{if ($6 ~/N/) {print $0}}' | cat " + bamname + "_junctions_header.txt - | samtools view -bS - | samtools sort - -T " \
@@ -63,8 +63,8 @@ def JunctionBam_SE(bam):
 	for command in (cmd_header, cmd_junc, cmd_index):
 		 subprocess.call(command, shell=True)
 
-def JunctionBam_PE(bam):
-    bamname = bam[:-4]
+def JunctionBam_PE(bam, bamname):
+    #bamname = bam[:-4]
     outfile = bamname + '_junctions'
     cmd_header = "samtools view -H " + bam + " > " + outfile + "_header.txt"
     # read 1
@@ -221,13 +221,14 @@ if __name__ == '__main__':
 	group_reads = parser.add_argument_group('read quantification')
 	group_reads.add_argument('--junctionReads', action='store_true', help='Quantify junction reads from specified introns', required=False)
 	group_reads.add_argument('--bam', type = str, metavar='x.bam', help = 'bam from which to extract junction reads. required if --junctionReads', required=False, default="None")
+	group_reads.add_argument('--outdir', type = str, metavar='', help = 'directory for temporary and final files. required if --junctionReads', required=False, default="None")
 	group_reads.add_argument('--readtype', type=str, help = 'type of read', default='paired', required=False, choices=['single','paired'])
 	group_reads.add_argument('--readstrand', type=str, help = 'directionality of RNA-seq data', default='fr-firststrand', required=False, choices=['fr-unstrand','fr-firststrand','fr-secondstrand'])
 	args = parser.parse_args()
 
 	if not args.intronRegions and not args.junctionReads:
-		sys.exit("ERROR! Need to specify either --intronRegions or --junctionRegions to perform a function with this script!")	
-	
+		sys.exit("ERROR! Need to specify either --intronRegions or --junctionRegions to perform a function with this script!")
+
 	if args.intronRegions:
 		print("Getting Intron Regions...")
 		getRegions(args.introns, args.readlength, args.overlap)
@@ -235,22 +236,24 @@ if __name__ == '__main__':
 	if args.junctionReads:
 		print("Getting Junction Reads...")
 		if args.bam == "None":
-			sys.exit("ERROR! Need to include --bam and --juncbam when running --junctionReads")
-		# make output folder
+			sys.exit("ERROR! Need to include --bam and --outdir when running --junctionReads")
+		# make output filename
+		name = args.bam
+		bamname = args.outdir + name.split('/')[-1]
 		# get non-junction read start sites
 		print("... read starts for non-split reads.")
 		bamhere = readBam(args.bam)
 		if args.readtype == "single" or args.readstrand == 'fr-unstrand':
-			startsites_single(bamhere, args.bam, args.readtype)
+			startsites_single(bamhere, bamname, args.readtype)
 		if args.readtype == "paired":
-			startsites_paired(bamhere, args.bam, args.readtype)
+			startsites_paired(bamhere, bamname, args.readtype)
 
 		# get junction reads
 		print("... split junction reads.")
 		if args.readtype == 'single' or args.readstrand == 'fr-unstrand':
-			JunctionBam_SE(args.bam)
+			JunctionBam_SE(args.bam, bamname[:-4])
 		if args.readtype == 'paired' and args.readstrand != 'fr-unstrand':
-			JunctionBam_PE(args.bam)
+			JunctionBam_PE(args.bam, bamname[:-4])
 
 		# names of region files
 		intronbed = args.introns[:-4] +'_'+ str(args.readlength) +'nt_intron_ie.bed'
@@ -258,24 +261,24 @@ if __name__ == '__main__':
 		exondownbed = args.introns[:-4] +'_'+ str(args.readlength) +'nt_exondown_ee.bed'
 
 		# get junction coverage
-		juncbam = args.bam[:-4]
+		#juncbam = args.bam[:-4]
 		print("... coverage of junction regions...")
 		print("...... intron-exon junction coverage.")
-		getCoverage_intron(intronbed, juncbam, args.readtype, args.readstrand)
+		getCoverage_intron(intronbed, bamname, args.readtype, args.readstrand)
 		print("...... junction coverage of upstream exons.")
-		getCoverage_exon(exonupbed, juncbam, args.readtype, args.readstrand, "eeup")
+		getCoverage_exon(exonupbed, bamname, args.readtype, args.readstrand, "eeup")
 		print("...... junction coverage of downstream exons.")
-		getCoverage_exon(exondownbed, juncbam, args.readtype, args.readstrand, "eedown")
+		getCoverage_exon(exondownbed, bamname, args.readtype, args.readstrand, "eedown")
 
 		# get intron-specific coverage and make final file
 		print("... making combined coverage file.")
-		exonupdict = readExonFile(juncbam + "_eeupjunc.bed.gz")
-		exondowndict = readExonFile(juncbam + "_eedownjunc.bed.gz")
-		introndict = readIntronFile(juncbam + "_iejunc.bed.gz")
-		combineRegions(introndict, exonupdict, exondowndict, juncbam)
+		exonupdict = readExonFile(bamname + "_eeupjunc.bed.gz")
+		exondowndict = readExonFile(bamname + "_eedownjunc.bed.gz")
+		introndict = readIntronFile(bamname + "_iejunc.bed.gz")
+		combineRegions(introndict, exonupdict, exondowndict, bamname)
 
 		# cleanup files
-		rmTempFiles(juncbam)
+		rmTempFiles(bamname)
 
 
 
