@@ -69,7 +69,8 @@ Identify and quantify exon-exon and intron-exon junction reads for designated in
 ```
 usage: python3 splicingrates_reads.py [-h] --introns x.introntype.bed --readlength readlength
                                           [--intronRegions] [--overlap]
-                                          [--junctionReads] [--bam x.bam] [--readtype {single,paired}]
+                                          [--junctionReads] [--bam x.bam] [--outdir]
+                                          [--readtype {single,paired}]
                                           [--readstrand {fr-unstrand,fr-firststrand,fr-secondstrand}]
 
 Get relevant intron-exon and exon-exon junction reads for splicing rate
@@ -95,6 +96,8 @@ read quantification:
                         (default: False)
   --bam x.bam           bam from which to extract junction reads. required if
                         --junctionReads (default: None)
+  --outdir              directory for temporary and final output files. required if
+                        --junctionReads (default: None)
   --readtype {single,paired}
                         type of read (default: paired)
   --readstrand {fr-unstrand,fr-firststrand,fr-secondstrand}
@@ -117,7 +120,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 read information:
-  --basename BASENAME   basename of combo files, including path. 
+  --basename BASENAME   basename of combo files, including full path. 
                         expected to have '_Xm_repX' prefix
                         (default: None)
   --timepoints t1,t2,...tn
@@ -225,7 +228,7 @@ Example usage using default parameters to run both steps in tandem:
 ```
 python3 splicingrates_reads.py --introns [genome].[introntype].bed --readlength 
                                --intronRegions --overlap 10
-                               --junctionReads --bam [sample].[T]m.rep[N].bam 
+                               --junctionReads --bam [sample].[T]m.rep[N].bam --outdir [/path/for/output]
                                --readtype paired --readstrand fr-firststrand
 ```
 
@@ -257,7 +260,7 @@ If you already have intron region files (from running Step 2A), then you can pro
 
 ```
 python3 splicingrates_reads.py --introns [genome].[introntype].bed --readlength RL
-                               --junctionReads --bam [sample].[T]m.rep[N].bam 
+                               --junctionReads --bam [sample].[T]m.rep[N].bam --outdir [/path/for/output/]
                                --readtype paired --readstrand fr-firststrand 
 ```
 
@@ -282,15 +285,15 @@ Junction reads are assigned to introns based on an matches to either the 3' intr
 This step results in 5 types of files, grouped into three categories:
 
 *intron-exon (IE) reads* <br>
-1. bed file(s) of read start sites for non-split reads, named using ```[sample].[T]m.rep[N]_startsites_read[1/2].bed.gz```, with two files corresponding to each mate if using paired end reads <br>
-2. bed file(s) of ie reads based on read start falling into the intron-exon boundary region identified in Step 1, named using ```[sample].[T]m.rep[N]_iejunc.bed.gz```.<br>
+1. bed file(s) of read start sites for non-split reads, named using ```[/path/for/output/][sample].[T]m.rep[N]_startsites_read[1/2].bed.gz```, with two files corresponding to each mate if using paired end reads <br>
+2. bed file(s) of ie reads based on read start falling into the intron-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample].[T]m.rep[N]_iejunc.bed.gz```.<br>
 
 *exon-exon (EE) reads* <br>
-1. bam files containing only the split exon-exon junction reads, named using ```[sample].[T]m.rep[N]_junctions.bam```. <br>
-2. bed files containing only exon-exon junction reads overlapping the corresponding exon-exon boundary region identified in Step 1, named using ```[sample].[T]m.rep[N]_ee[up/down]junc.bed.gz```
+1. bam files containing only the split exon-exon junction reads, named using ```[/path/for/output/][sample].[T]m.rep[N]_junctions.bam```. <br>
+2. bed files containing only exon-exon junction reads overlapping the corresponding exon-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample].[T]m.rep[N]_ee[up/down]junc.bed.gz```
 
 *combined junction reads* <br>
-- file with final ie and ee junction read counts for each intron, named using ```[sample].[T]m.rep[N]_junctionCombo.coverage``` and with the following format:
+- file with final ie and ee junction read counts for each intron, named using ```[/path/for/output/][sample].[T]m.rep[N]_junctionCombo.coverage``` and with the following format:
 
 ```
 intron	ee_count	ie_count
@@ -318,14 +321,14 @@ This script takes in all samples from the study, across timepoints and replicate
 
 **Inputs**
 
-For a 4sU-seq dataset in Fly S2 cells with 3 timepoints and 3 replicates, using the desired naming convention will result in the following files (each of which should have been processed using ```splicingrates_reads.py```):
+For a 4sU-seq dataset in Fly S2 cells with 3 timepoints and 3 replicates, using the desired naming convention will result in the following files, each of which should have been processed using ```splicingrates_reads.py``` (and the output saved in /path/for/output/):
 
 replicate 1: *FlyS2_5m_rep1.bam*, *FlyS2_10m_rep1.bam*, *FlyS2_20m_rep1.bam* <br>
 replicate 2: *FlyS2_5m_rep2.bam*, *FlyS2_10m_rep2.bam*, *FlyS2_20m_rep2.bam* <br>
 replicate 3: *FlyS2_5m_rep3.bam*, *FlyS2_10m_rep3.bam*, *FlyS2_20m_rep3.bam*
 
 *Example Inputs:*
-- <pre><code>--basename <i>FlyS2</i></code></pre>
+- <pre><code>--basename /path/for/output/<i>FlyS2</i></code></pre>
 - <pre><code>--timepoints <i>5,10,20</i></code></pre>
 - <pre><code>--replicates <i>3</i></code></pre>
 - <pre><code>--outname <i>FlyS2_splicingrates</i></code></pre>
