@@ -272,7 +272,7 @@ if __name__ == '__main__':
 
 		# get intron-specific coverage and make final file
 		print("... making combined coverage file.")
-		exonupdict = readExonFile(bamname + "_eeupjunc.bed.gz")
+		exonupdict = readExonFile(juncbam + "_eeupjunc.bed.gz")
 		exondowndict = readExonFile(juncbam + "_eedownjunc.bed.gz")
 		introndict = readIntronFile(juncbam + "_iejunc.bed.gz")
 		combineRegions(introndict, exonupdict, exondowndict, juncbam)
