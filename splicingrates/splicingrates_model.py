@@ -133,7 +133,7 @@ if __name__ == '__main__':
 		df_rep_Dprime_Rprime = calculateRprime(df_rep_Dprime, times, args.txnrate)
 		# write outfile with junctions, D', and R'
 		halflifefile = args.outname + '_rep' + str(r) + '.halflives' 
-		df_rep_Dprime_Rprime.to_csv(halflifefile, sep='\t', index=False)
+		df_rep_Dprime_Rprime.to_csv(halflifefile, sep='\t', index=True)
 		estimateSplicingRates(halflifefile, args.txnrate)
 
 	#pdb.set_trace()
@@ -150,5 +150,5 @@ if __name__ == '__main__':
 		df_sum_Dprime_Rprime = calculateRprime(df_sum_Dprime, times, args.txnrate)
 		# write outfile with junctions, D', and R'
 		halflifefile = args.outname + '_summed.halflives' 
-		df_sum_Dprime_Rprime.to_csv(halflifefile, sep='\t', index=False)
+		df_sum_Dprime_Rprime.to_csv(halflifefile, sep='\t', index=True)
 		estimateSplicingRates(halflifefile, args.txnrate)
