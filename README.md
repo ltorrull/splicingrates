@@ -171,7 +171,7 @@ samtools index [bamfile].bam
 ```
 
 **SAMPLE NAMING CONVENTION** <br>
-***Downstream steps assume that the bam file is named with the following convention: ```[samplename].[T]m.rep[N].bam```, where T is the 4sU labeling timepoint and N is the replicate. T can be a string (i.e. "totalRNA") as long as the "m" is included. Even if there is just 1 replicate, the "rep1" is expected to be included in the file name. THIS IS IMPORTANT FOR SAMPLES TO BE PROPERLY RECOGNIZED AND PARSED IN LATER STEPS! ***
+***Downstream steps assume that the bam file is named with the following convention: ```[samplename]_[T]m_rep[N].bam```, where T is the 4sU labeling timepoint and N is the replicate. T can be a string (i.e. "totalRNA") as long as the "m" is included. Even if there is just 1 replicate, the "rep1" is expected to be included in the file name. THIS IS IMPORTANT FOR SAMPLES TO BE PROPERLY RECOGNIZED AND PARSED IN LATER STEPS! ***
 
 ### Step 1: Intron Delineation
 
@@ -228,7 +228,7 @@ Example usage using default parameters to run both steps in tandem:
 ```
 python3 splicingrates_reads.py --introns [genome].[introntype].bed --readlength 
                                --intronRegions --overlap 10
-                               --junctionReads --bam [sample].[T]m.rep[N].bam --outdir [/path/for/output]
+                               --junctionReads --bam [sample]_[T]m_rep[N].bam --outdir [/path/for/output]
                                --readtype paired --readstrand fr-firststrand
 ```
 
@@ -260,7 +260,7 @@ If you already have intron region files (from running Step 2A), then you can pro
 
 ```
 python3 splicingrates_reads.py --introns [genome].[introntype].bed --readlength RL
-                               --junctionReads --bam [sample].[T]m.rep[N].bam --outdir [/path/for/output/]
+                               --junctionReads --bam [sample]_[T]m_rep[N].bam --outdir [/path/for/output/]
                                --readtype paired --readstrand fr-firststrand 
 ```
 
@@ -285,11 +285,11 @@ Junction reads are assigned to introns based on an matches to either the 3' intr
 This step results in 5 types of files, grouped into three categories:
 
 *intron-exon (IE) reads* <br>
-1. bed file(s) of read start sites for non-split reads, named using ```[/path/for/output/][sample].[T]m.rep[N]_startsites_read[1/2].bed.gz```, with two files corresponding to each mate if using paired end reads <br>
+1. bed file(s) of read start sites for non-split reads, named using ```[/path/for/output/][sample]_[T]m_rep[N]_startsites_read[1/2].bed.gz```, with two files corresponding to each mate if using paired end reads <br>
 2. bed file(s) of ie reads based on read start falling into the intron-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample].[T]m.rep[N]_iejunc.bed.gz```.<br>
 
 *exon-exon (EE) reads* <br>
-1. bam files containing only the split exon-exon junction reads, named using ```[/path/for/output/][sample].[T]m.rep[N]_junctions.bam```. <br>
+1. bam files containing only the split exon-exon junction reads, named using ```[/path/for/output/][sample]_[T]m_rep[N]_junctions.bam```. <br>
 2. bed files containing only exon-exon junction reads overlapping the corresponding exon-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample].[T]m.rep[N]_ee[up/down]junc.bed.gz```
 
 *combined junction reads* <br>
