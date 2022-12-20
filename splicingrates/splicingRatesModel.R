@@ -41,7 +41,7 @@ sumsqequationsolve <- function(x = "file with junction counts, Dprimes, and Rpri
 juncratio.data <- read.table(JUNCTIONFILE, sep="\t", header=T)
 
 # run model
-sumsqfit.data <- t(apply(JUNCTIONFILE, 1, sumsqequationsolve, TXNRATE))
+sumsqfit.data <- t(apply(juncratio.data, 1, sumsqequationsolve, TXNRATE))
 
 # fitvalue = half live, yvalue = error around fit from optimization function
 juncratio.data$fitvalue <- sumsqfit.data[,1]
