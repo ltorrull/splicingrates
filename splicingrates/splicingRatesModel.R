@@ -15,8 +15,8 @@ TXNRATE = as.numeric(args[2]) #txn rate in nt/min
 sumsqequationsolve <- function(x = "file with junction counts, Dprimes, and Rprimes", txnrate = "transcription rate"){
   
   # separate out D' and R' values
-  D_prime = x[c(grep("^Dprime_[0-9]+$", names(x)))]
-  R_prime = x[c(grep("^Rprime_[0-9]+$", names(x)))]
+  D_prime = as.numeric(x[c(grep('^Dprime_[0-9]+\\Km', names(x), perl = T))])
+  R_prime = as.numeric(x[c(grep('^Rprime_[0-9]+\\Km', names(x), perl = T))])
 
   i = 1:length(R_prime)
 
@@ -51,12 +51,12 @@ names(juncratio.data)[names(juncratio.data) == 'yvalue'] <- 'fit.error'
 
 ##### Parse modeled introns to a set with optimal power to confidently detect half-lives
 juncratio.data$result <- "success"
-ratioinds <- grep('_ratio', colnames(juncratio.data))
+ratioinds <- grep('ratio', colnames(juncratio.data))
 
 # Remove those without intron-exon junction coverage in the earliest timepoint
 ## determined by ratio_T1 > 0 (if ie = 0, then ratio = 0)
 #juncratio.data.parsed <- juncratio.data[which(juncratio.data[,ratioinds[1]] > 0),]
-juncratio.data$result[which(juncratio.data[,ratioinds[1]] > 0)] <- "noIE_veryFast"
+juncratio.data$result[which(juncratio.data[,ratioinds[1]] == 0)] <- "noIE_veryFast"
 
 # Remove those without exon-exon junction reads in the last timepoint
 ## determined by ratio_Tn = inf
