@@ -286,14 +286,14 @@ This step results in 5 types of files, grouped into three categories:
 
 *intron-exon (IE) reads* <br>
 1. bed file(s) of read start sites for non-split reads, named using ```[/path/for/output/][sample]_[T]m_rep[N]_startsites_read[1/2].bed.gz```, with two files corresponding to each mate if using paired end reads <br>
-2. bed file(s) of ie reads based on read start falling into the intron-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample].[T]m.rep[N]_iejunc.bed.gz```.<br>
+2. bed file(s) of ie reads based on read start falling into the intron-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample]_[T]m_rep[N]_iejunc.bed.gz```.<br>
 
 *exon-exon (EE) reads* <br>
 1. bam files containing only the split exon-exon junction reads, named using ```[/path/for/output/][sample]_[T]m_rep[N]_junctions.bam```. <br>
-2. bed files containing only exon-exon junction reads overlapping the corresponding exon-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample].[T]m.rep[N]_ee[up/down]junc.bed.gz```
+2. bed files containing only exon-exon junction reads overlapping the corresponding exon-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample]_[T]m_rep[N]_ee[up/down]junc.bed.gz```
 
 *combined junction reads* <br>
-- file with final ie and ee junction read counts for each intron, named using ```[/path/for/output/][sample].[T]m.rep[N]_junctionCombo.coverage``` and with the following format:
+- file with final ie and ee junction read counts for each intron, named using ```[/path/for/output/][sample]_[T]m_rep[N]_junctionCombo.coverage``` and with the following format:
 
 ```
 intron	ee_count	ie_count
