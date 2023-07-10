@@ -26,7 +26,7 @@ def readsPerReplicate(basename, times, rep):
 			df_here = pd.read_csv(name_t, sep='\t', compression="gzip").set_index('intron')
 			df_rep['ie_' + times[t] + 'm'] = df_here['ie_count']
 			df_rep['ee_' + times[t] + 'm'] = df_here['ee_count']
-			df_rep['ratio_' + times[t] + 'm'] = df_here['ie_' + times[t] + 'm'] / df_here['ee_' + times[t] + 'm']
+			df_rep['ratio_' + times[t] + 'm'] = df_rep['ie_' + times[t] + 'm'] / df_rep['ee_' + times[t] + 'm']
 	return(df_rep)
 
 def SummedReads(basename, times, reps):	
@@ -132,7 +132,7 @@ if __name__ == '__main__':
 		# calculate R'
 		df_rep_Dprime_Rprime = calculateRprime(df_rep_Dprime, times, args.txnrate)
 		# write outfile with junctions, D', and R'
-		halflifefile = args.outname + '_rep' + str(r) + '.halflives' 
+		halflifefile = args.outname + '_rep' + str(rep) + '.halflives' 
 		df_rep_Dprime_Rprime.to_csv(halflifefile, sep='\t', index=True)
 		estimateSplicingRates(halflifefile, args.txnrate)
 
