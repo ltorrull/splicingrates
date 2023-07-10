@@ -65,21 +65,20 @@ def JunctionBam_SE(bam, bamname):
 
 def JunctionBam_PE(bam, bamname):
     #bamname = bam[:-4]
-    outfile = bamname + '_junctions'
-    cmd_header = "samtools view -H " + bam + " > " + outfile + "_header.txt"
+    cmd_header = "samtools view -H " + bam + " > " + bamname + "_junctions_header.txt"
     # read 1
-    outfile1 = outfile[:-4] +"_read1.bam"
-    cmd_junc = "samtools view -f 64 -F 256 " + bam + " | awk '{if ($6 ~/N/) {print $0}}' | cat " + outfile + "_header.txt - | samtools view -bS - | samtools sort - -T " \
+    outfile1 = bamname +"_junctions_read1.bam"
+    cmd_junc1 = "samtools view -f 64 -F 256 " + bam + " | awk '{if ($6 ~/N/) {print $0}}' | cat " + bamname + "_junctions_header.txt - | samtools view -bS - | samtools sort - -T " \
                + outfile1 + " -o " + outfile1
-    cmd_index = "samtools index " +outfile1
-    for command in (cmd_header, cmd_junc, cmd_index):
+    cmd_index1 = "samtools index " +outfile1
+    for command in (cmd_header, cmd_junc1, cmd_index1):
         subprocess.call(command, shell=True)
     # read 2
-    outfile2 = outfile[:-4] +"_read2.bam"
-    cmd_junc = "samtools view -f 128 -F 256 " + bam + " | awk '{if ($6 ~/N/) {print $0}}' | cat " + outfile + "_header.txt - | samtools view -bS - | samtools sort - -T " \
+    outfile2 = bamname +"_junctions_read2.bam"
+    cmd_junc2 = "samtools view -f 128 -F 256 " + bam + " | awk '{if ($6 ~/N/) {print $0}}' | cat " + bamname + "_junctions_header.txt - | samtools view -bS - | samtools sort - -T " \
                + outfile2 + " -o " + outfile2
-    cmd_index = "samtools index " +outfile2
-    for command in (cmd_junc, cmd_index):
+    cmd_index2 = "samtools index " +outfile2
+    for command in (cmd_junc2, cmd_index2):
         subprocess.call(command, shell=True)
 
 def getCoverage_intron(bed, juncbam, readtype, readstrand):
