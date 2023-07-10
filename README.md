@@ -296,7 +296,7 @@ This step results in 5 types of files, grouped into three categories:
 - file with final ie and ee junction read counts for each intron, named using ```[/path/for/output/][sample]_[T]m_rep[N]_junctionCombo.coverage``` and with the following format:
 
 ```
-intron	ee_count	ie_count
+intron	ie_count	ee_count
 ENSG00000223972:1:12227-12613:+	  1	0
 ENSG00000227232:1:14501-15005:-	  2	36
 ENSG00000227232:1:15038-15796:-	  4	11
@@ -315,7 +315,7 @@ python3 splicingrates_model.py --basename [sample] --timepoints t1,t2,tn
                                --summed --txnrate 1500
 ```
 
-This script takes in all samples from the study, across timepoints and replicates, and calculates splicing half-lives in one of two way:
+This script takes in all samples from the study, across timepoints and replicates, and calculates splicing half-lives in one of two ways:
 1. For each replicate individually, using samples from each timepoint within the replicate (assumes timepoints from the same replicate have been conducted using the same cells or in a single experimental workflow).
 2. Across all the samples, using the sum of junction reads across each replicate to create a single sample per timepoint. To run the script in this mode, use ```--summed```.
 
