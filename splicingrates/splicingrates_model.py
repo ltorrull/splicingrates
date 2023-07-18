@@ -21,7 +21,7 @@ def readsPerReplicate(basename, times, rep):
 	df_rep.columns = ['ie_' + times[0] + 'm', 'ee_' + times[0] + 'm']
 	df_rep['ratio_' + times[0] + 'm'] = df_rep['ie_' + times[0] + 'm'] / df_rep['ee_' + times[0] + 'm']
 	if len(times) > 1:
-		for t in range(1, len(times)):
+		for t in range(0, len(times)):
 			name_t = basename +'_'+ times[t]+ suffix + '_junctionCombo.coverage.gz'
 			df_here = pd.read_csv(name_t, sep='\t', compression="gzip").set_index('intron')
 			df_rep['ie_' + times[t] + 'm'] = df_here['ie_count']
@@ -37,32 +37,38 @@ def SummedReads(basename, times, reps):
 	#df_time.columns = ['intron', name_t1_r1+'_ie', name_t1_r1+'_ee']
 	df_time.columns = ['ie_' + name_t1_r1, 'ee_' + name_t1_r1]
 	if reps > 1:
-		for r in range(1, reps):
+		for r in range(0, reps):
+			regex1 = r'(ie_)'
+			regex2 = r'(ee_)'
 			rep = times[0] + 'm_rep' + str(r+1)
 			name_r = basename +'_'+ rep + '_junctionCombo.coverage.gz'
 			df_here = pd.read_csv(name_r, sep='\t', compression="gzip").set_index('intron')
 			df_time['ie_' + rep] = df_here['ie_count']
 			df_time['ee_' + rep] = df_here['ee_count']
-	df_time['ie_' + times[0] + 'm'] = df_time.filter(like='ie_').sum()
-	df_time['ee_' + times[0] + 'm'] = df_time.filter(like='ee_').sum()
+	df_time['ie_' + times[0] + 'm'] = df_time.groupby(df_time.columns.str.extract(regex1, expand=False), axis=1).sum()
+	df_time['ee_' + times[0] + 'm'] = df_time.groupby(df_time.columns.str.extract(regex2, expand=False), axis=1).sum()
 	df_time['ratio_' + times[0] + 'm'] = df_time['ie_' + times[0] + 'm'] / df_time['ee_' + times[0] + 'm']
 	# initialize new dataframe with time 1
-	df_sum = pd.DataFrame(df_time, columns=["intron", 'ie_' + times[0] + 'm', 'ee_' + times[0] + 'm', 'ratio_' + times[0] + 'm'])
+	df_sum = pd.DataFrame(df_time, columns=['ie_' + times[0] + 'm', 'ee_' + times[0] + 'm', 'ratio_' + times[0] + 'm'])
 	if len(times) > 1:
-		for t in range(1, len(times)):
-			name_rep1 = basename +'_'+ times[t] +'_m_rep1_junctionCombo.coverage.gz'
+		for t in range(0, len(times)):
+			regex1 = r'(ie_)'
+			regex2 = r'(ee_)'
+			name_rep1 = basename +'_'+ times[t] +'m_rep1_junctionCombo.coverage.gz'
 			df_time = pd.read_csv(name_rep1, sep='\t', compression="gzip").set_index('intron')
 			#df_time.columns = ['intron', times[t]+'m_rep1_ie', times[t]+'m_rep1_ee']
 			df_time.columns = ['ie_' + times[t] + 'm_rep1', 'ee_' + times[t] + 'm_rep1']
 			if reps > 1:
-				for r in range(1, reps):
-					rep = times[t] +'_m_rep'+ str(r+1)
+				for r in range(0, reps):
+					rep = times[t] +'m_rep'+ str(r+1)
 					name_r = basename +'_'+ rep +'_junctionCombo.coverage.gz'
 					df_here = pd.read_csv(name_r, sep='\t', compression="gzip").set_index('intron')
+					regex1 = r'(ie_)'
+					regex2 = r'(ee_)'
 					df_time['ie_' + rep] = df_here['ie_count']
 					df_time['ee_' + rep] = df_here['ee_count']
-			df_sum['ie_' + times[t] + 'm'] = df_time.filter(like='ie_').sum()
-			df_sum['ee_' + times[t] + 'm'] = df_time.filter(like='ee_').sum()
+			df_sum['ie_' + times[t] + 'm'] = df_time.groupby(df_time.columns.str.extract(regex1, expand=False), axis=1).sum()
+			df_sum['ee_' + times[t] + 'm'] = df_time.groupby(df_time.columns.str.extract(regex2, expand=False), axis=1).sum()
 			df_sum['ratio_' + times[t] + 'm'] = df_sum['ie_' + times[t] + 'm'] / df_sum['ee_' + times[t] + 'm']
 	return(df_sum)
 
