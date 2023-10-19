@@ -44,7 +44,7 @@ def startsites_paired(bamhere, bamfile, readtype, includesplit=False):
     bamname = bamfile[:-4]
     if includesplit == False:
         outfile1 = gzip.open(bamname +'_startsites_read1.bed.gz', 'wt')
-        outfile1 = gzip.open(bamname +'_startsites_read2.bed.gz', 'wt')
+        outfile2 = gzip.open(bamname +'_startsites_read2.bed.gz', 'wt')
         for read in bamhere:
             if read.is_paired and read.is_proper_pair and 'N' not in read.cigarstring:
                 start = int(read.pos)
@@ -73,7 +73,8 @@ def startsites_paired(bamhere, bamfile, readtype, includesplit=False):
                 if not read.is_read1:
                     outfile2.write(str(bamhere.getrname(read.rname)) +'\t'+ str(start) + '\t'+ str(end) + '\t'+ str(read.qname) +'\t.\t'+ str(strand) + '\n')
     bamhere.close()
-    outfile.close()
+    outfile1.close()
+    outfile2.close()
 
 def startsites_pairedFirst(bamhere, bamfile, readtype, includesplit=False):
     bamname = bamfile[:-4]
@@ -108,7 +109,8 @@ def startsites_pairedFirst(bamhere, bamfile, readtype, includesplit=False):
                 if not read.is_read1:
                     outfile2.write(str(bamhere.getrname(read.rname)) +'\t'+ str(start) + '\t'+ str(end) + '\t'+ str(read.qname) +'\t.\t'+ str(strand) + '\n')
     bamhere.close()
-    outfile.close()
+    outfile1.close()
+    outfile2.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

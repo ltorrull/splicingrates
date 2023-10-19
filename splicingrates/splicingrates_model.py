@@ -18,15 +18,15 @@ def readsPerReplicate(basename, times, rep):
 	name_t1 = basename +'_'+ times[0]+ suffix + '_junctionCombo.coverage.gz'
 	df_rep = pd.read_csv(name_t1, sep='\t', compression="gzip").set_index('intron')
 	#df_rep.columns = ['intron', times[0] + suffix +'_ie', times[0] + suffix + '_ee']
-	df_rep.columns = [times[0] +'m_ie', times[0] + 'm_ee']
-	df_rep[times[0]+'m_ratio'] = df_rep[times[0]+'m_ie'] / df_rep[times[0]+'m_ee']
+	df_rep.columns = ['ie_' + times[0] + 'm', 'ee_' + times[0] + 'm']
+	df_rep['ratio_' + times[0] + 'm'] = df_rep['ie_' + times[0] + 'm'] / df_rep['ee_' + times[0] + 'm']
 	if len(times) > 1:
-		for t in range(1, len(times)):
+		for t in range(0, len(times)):
 			name_t = basename +'_'+ times[t]+ suffix + '_junctionCombo.coverage.gz'
 			df_here = pd.read_csv(name_t, sep='\t', compression="gzip").set_index('intron')
-			df_rep[times[t]+'m_ie'] = df_here['ie_count']
-			df_rep[times[t]+'m_ee'] = df_here['ee_count']
-			df_rep[times[t]+'m_ratio'] = df_here[times[t]+'m_ie'] / df_here[times[t]+'m_ee']
+			df_rep['ie_' + times[t] + 'm'] = df_here['ie_count']
+			df_rep['ee_' + times[t] + 'm'] = df_here['ee_count']
+			df_rep['ratio_' + times[t] + 'm'] = df_rep['ie_' + times[t] + 'm'] / df_rep['ee_' + times[t] + 'm']
 	return(df_rep)
 
 def SummedReads(basename, times, reps):	
@@ -35,35 +35,41 @@ def SummedReads(basename, times, reps):
 	file_t1_r1 = basename +'_'+ name_t1_r1 + '_junctionCombo.coverage.gz'
 	df_time = pd.read_csv(file_t1_r1, sep='\t', compression="gzip").set_index('intron')
 	#df_time.columns = ['intron', name_t1_r1+'_ie', name_t1_r1+'_ee']
-	df_time.columns = [name_t1_r1+'_ie', name_t1_r1+'_ee']
+	df_time.columns = ['ie_' + name_t1_r1, 'ee_' + name_t1_r1]
 	if reps > 1:
-		for r in range(1, reps):
+		for r in range(0, reps):
+			regex1 = r'(ie_)'
+			regex2 = r'(ee_)'
 			rep = times[0] + 'm_rep' + str(r+1)
 			name_r = basename +'_'+ rep + '_junctionCombo.coverage.gz'
 			df_here = pd.read_csv(name_r, sep='\t', compression="gzip").set_index('intron')
-			df_time[rep+'_ie'] = df_here['ie_count']
-			df_time[rep+'_ee'] = df_here['ee_count']
-	df_time[times[0]+'m_ie'] = df_time.filter(like='_ie').sum()
-	df_time[times[0]+'m_ee'] = df_time.filter(like='_ee').sum()
-	df_time[times[0]+'m_ratio'] = df_time[times[0]+'m_ie'] / df_time[times[0]+'m_ee']
+			df_time['ie_' + rep] = df_here['ie_count']
+			df_time['ee_' + rep] = df_here['ee_count']
+	df_time['ie_' + times[0] + 'm'] = df_time.groupby(df_time.columns.str.extract(regex1, expand=False), axis=1).sum()
+	df_time['ee_' + times[0] + 'm'] = df_time.groupby(df_time.columns.str.extract(regex2, expand=False), axis=1).sum()
+	df_time['ratio_' + times[0] + 'm'] = df_time['ie_' + times[0] + 'm'] / df_time['ee_' + times[0] + 'm']
 	# initialize new dataframe with time 1
-	df_sum = pd.DataFrame(df_time, columns=["intron", times[0]+'m_ie', times[0]+'m_ee', times[0]+'m_ratio'])
+	df_sum = pd.DataFrame(df_time, columns=['ie_' + times[0] + 'm', 'ee_' + times[0] + 'm', 'ratio_' + times[0] + 'm'])
 	if len(times) > 1:
-		for t in range(1, len(times)):
-			name_rep1 = basename +'_'+ times[t] +'_m_rep1_junctionCombo.coverage.gz'
+		for t in range(0, len(times)):
+			regex1 = r'(ie_)'
+			regex2 = r'(ee_)'
+			name_rep1 = basename +'_'+ times[t] +'m_rep1_junctionCombo.coverage.gz'
 			df_time = pd.read_csv(name_rep1, sep='\t', compression="gzip").set_index('intron')
 			#df_time.columns = ['intron', times[t]+'m_rep1_ie', times[t]+'m_rep1_ee']
-			df_time.columns = [times[t]+'m_rep1_ie', times[t]+'m_rep1_ee']
+			df_time.columns = ['ie_' + times[t] + 'm_rep1', 'ee_' + times[t] + 'm_rep1']
 			if reps > 1:
-				for r in range(1, reps):
-					rep = times[t] +'_m_rep'+ str(r+1)
+				for r in range(0, reps):
+					rep = times[t] +'m_rep'+ str(r+1)
 					name_r = basename +'_'+ rep +'_junctionCombo.coverage.gz'
 					df_here = pd.read_csv(name_r, sep='\t', compression="gzip").set_index('intron')
-					df_time[rep+'_ie'] = df_here['ie_count']
-					df_time[rep+'_ee'] = df_here['ee_count']
-			df_sum[times[t]+'m_ie'] = df_time.filter(like='_ie').sum()
-			df_sum[times[t]+'m_ee'] = df_time.filter(like='_ee').sum()
-			df_sum[times[t]+'m_ratio'] = df_sum[times[t]+'m_ie'] / df_sum[times[t]+'m_ee']
+					regex1 = r'(ie_)'
+					regex2 = r'(ee_)'
+					df_time['ie_' + rep] = df_here['ie_count']
+					df_time['ee_' + rep] = df_here['ee_count']
+			df_sum['ie_' + times[t] + 'm'] = df_time.groupby(df_time.columns.str.extract(regex1, expand=False), axis=1).sum()
+			df_sum['ee_' + times[t] + 'm'] = df_time.groupby(df_time.columns.str.extract(regex2, expand=False), axis=1).sum()
+			df_sum['ratio_' + times[t] + 'm'] = df_sum['ie_' + times[t] + 'm'] / df_sum['ee_' + times[t] + 'm']
 	return(df_sum)
 
 # read in 3' dist
@@ -76,13 +82,13 @@ def calculateDprime(df_threelength, times, txnrate):
 	# total.juncratio.data$D_prime <- (total.juncratio.data$threelength) + (minute * txnrate)
 	for t in times:
 		min = int(t)
-		df_threelength[t+'m_Dprime'] = df_threelength['distance'] + (min * txnrate)
+		df_threelength['Dprime_' + t + 'm'] = df_threelength['distance'] + (min * txnrate)
 	return(df_threelength)
 
 def calculateRprime(df_juncs, times, txnrate):
 	#total.juncratio.data$R_prime <- (total.juncratio.data$D_prime*log(2))/(txnrate*((1/total.juncratio.data$ratio) + 1))
 	for t in times:
-		df_juncs[t+'m_Rprime'] = (df_juncs[t+'m_Dprime'] * math.log(2, 10)) / (txnrate * ((1 / df_juncs[t+'m_ratio']) + 1))
+		df_juncs['Rprime_' + t + 'm'] = (df_juncs['Dprime_' + t + 'm'] * math.log(2, 10)) / (txnrate * ((1 / df_juncs['ratio_' + t + 'm']) + 1))
 	return(df_juncs)
 
 def estimateSplicingRates(halflifefile, txnrate):
@@ -132,8 +138,8 @@ if __name__ == '__main__':
 		# calculate R'
 		df_rep_Dprime_Rprime = calculateRprime(df_rep_Dprime, times, args.txnrate)
 		# write outfile with junctions, D', and R'
-		halflifefile = args.outname + '_rep' + str(r) + '.halflives' 
-		df_rep_Dprime_Rprime.to_csv(halflifefile, sep='\t', index=False)
+		halflifefile = args.outname + '_rep' + str(rep) + '.halflives' 
+		df_rep_Dprime_Rprime.to_csv(halflifefile, sep='\t', index=True)
 		estimateSplicingRates(halflifefile, args.txnrate)
 
 	#pdb.set_trace()
@@ -150,5 +156,5 @@ if __name__ == '__main__':
 		df_sum_Dprime_Rprime = calculateRprime(df_sum_Dprime, times, args.txnrate)
 		# write outfile with junctions, D', and R'
 		halflifefile = args.outname + '_summed.halflives' 
-		df_sum_Dprime_Rprime.to_csv(halflifefile, sep='\t', index=False)
+		df_sum_Dprime_Rprime.to_csv(halflifefile, sep='\t', index=True)
 		estimateSplicingRates(halflifefile, args.txnrate)

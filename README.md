@@ -171,7 +171,7 @@ samtools index [bamfile].bam
 ```
 
 **SAMPLE NAMING CONVENTION** <br>
-***Downstream steps assume that the bam file is named with the following convention: ```[samplename].[T]m.rep[N].bam```, where T is the 4sU labeling timepoint and N is the replicate. T can be a string (i.e. "totalRNA") as long as the "m" is included. Even if there is just 1 replicate, the "rep1" is expected to be included in the file name. THIS IS IMPORTANT FOR SAMPLES TO BE PROPERLY RECOGNIZED AND PARSED IN LATER STEPS! ***
+***Downstream steps assume that the bam file is named with the following convention: ```[samplename]_[T]m_rep[N].bam```, where T is the 4sU labeling timepoint and N is the replicate. T can be a string (i.e. "totalRNA") as long as the "m" is included. Even if there is just 1 replicate, the "rep1" is expected to be included in the file name. THIS IS IMPORTANT FOR SAMPLES TO BE PROPERLY RECOGNIZED AND PARSED IN LATER STEPS! ***
 
 ### Step 1: Intron Delineation
 
@@ -228,7 +228,7 @@ Example usage using default parameters to run both steps in tandem:
 ```
 python3 splicingrates_reads.py --introns [genome].[introntype].bed --readlength 
                                --intronRegions --overlap 10
-                               --junctionReads --bam [sample].[T]m.rep[N].bam --outdir [/path/for/output]
+                               --junctionReads --bam [sample]_[T]m_rep[N].bam --outdir [/path/for/output]
                                --readtype paired --readstrand fr-firststrand
 ```
 
@@ -260,7 +260,7 @@ If you already have intron region files (from running Step 2A), then you can pro
 
 ```
 python3 splicingrates_reads.py --introns [genome].[introntype].bed --readlength RL
-                               --junctionReads --bam [sample].[T]m.rep[N].bam --outdir [/path/for/output/]
+                               --junctionReads --bam [sample]_[T]m_rep[N].bam --outdir [/path/for/output/]
                                --readtype paired --readstrand fr-firststrand 
 ```
 
@@ -285,18 +285,18 @@ Junction reads are assigned to introns based on an matches to either the 3' intr
 This step results in 5 types of files, grouped into three categories:
 
 *intron-exon (IE) reads* <br>
-1. bed file(s) of read start sites for non-split reads, named using ```[/path/for/output/][sample].[T]m.rep[N]_startsites_read[1/2].bed.gz```, with two files corresponding to each mate if using paired end reads <br>
-2. bed file(s) of ie reads based on read start falling into the intron-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample].[T]m.rep[N]_iejunc.bed.gz```.<br>
+1. bed file(s) of read start sites for non-split reads, named using ```[/path/for/output/][sample]_[T]m_rep[N]_startsites_read[1/2].bed.gz```, with two files corresponding to each mate if using paired end reads <br>
+2. bed file(s) of ie reads based on read start falling into the intron-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample]_[T]m_rep[N]_iejunc.bed.gz```.<br>
 
 *exon-exon (EE) reads* <br>
-1. bam files containing only the split exon-exon junction reads, named using ```[/path/for/output/][sample].[T]m.rep[N]_junctions.bam```. <br>
-2. bed files containing only exon-exon junction reads overlapping the corresponding exon-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample].[T]m.rep[N]_ee[up/down]junc.bed.gz```
+1. bam files containing only the split exon-exon junction reads, named using ```[/path/for/output/][sample]_[T]m_rep[N]_junctions.bam```. <br>
+2. bed files containing only exon-exon junction reads overlapping the corresponding exon-exon boundary region identified in Step 1, named using ```[/path/for/output/][sample]_[T]m_rep[N]_ee[up/down]junc.bed.gz```
 
 *combined junction reads* <br>
-- file with final ie and ee junction read counts for each intron, named using ```[/path/for/output/][sample].[T]m.rep[N]_junctionCombo.coverage``` and with the following format:
+- file with final ie and ee junction read counts for each intron, named using ```[/path/for/output/][sample]_[T]m_rep[N]_junctionCombo.coverage``` and with the following format:
 
 ```
-intron	ee_count	ie_count
+intron	ie_count	ee_count
 ENSG00000223972:1:12227-12613:+	  1	0
 ENSG00000227232:1:14501-15005:-	  2	36
 ENSG00000227232:1:15038-15796:-	  4	11
@@ -315,7 +315,7 @@ python3 splicingrates_model.py --basename [sample] --timepoints t1,t2,tn
                                --summed --txnrate 1500
 ```
 
-This script takes in all samples from the study, across timepoints and replicates, and calculates splicing half-lives in one of two way:
+This script takes in all samples from the study, across timepoints and replicates, and calculates splicing half-lives in one of two ways:
 1. For each replicate individually, using samples from each timepoint within the replicate (assumes timepoints from the same replicate have been conducted using the same cells or in a single experimental workflow).
 2. Across all the samples, using the sum of junction reads across each replicate to create a single sample per timepoint. To run the script in this mode, use ```--summed```.
 
