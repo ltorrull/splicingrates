@@ -88,7 +88,7 @@ def calculateDprime(df_threelength, times, txnrate):
 def calculateRprime(df_juncs, times, txnrate):
 	#total.juncratio.data$R_prime <- (total.juncratio.data$D_prime*log(2))/(txnrate*((1/total.juncratio.data$ratio) + 1))
 	for t in times:
-		df_juncs['Rprime_' + t + 'm'] = (df_juncs['Dprime_' + t + 'm'] * math.log(2, 10)) / (txnrate * ((1 / df_juncs['ratio_' + t + 'm']) + 1))
+		df_juncs['Rprime_' + t + 'm'] = (df_juncs['Dprime_' + t + 'm'] * math.log(2)) / (txnrate * ((1 / df_juncs['ratio_' + t + 'm']) + 1))
 	return(df_juncs)
 
 def estimateSplicingRates(halflifefile, txnrate):
